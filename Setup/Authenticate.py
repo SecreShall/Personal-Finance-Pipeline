@@ -4,6 +4,7 @@ import os
 
 load_dotenv()
 client_id = os.getenv("CLIENT_ID")
+partner_id = os.getenv("CLIENT_ID")
 
 AUTH_URL = "https://api-uat.unionbankph.com/partners/sb/customers/v1/oauth2/authorize"
 
@@ -13,7 +14,7 @@ params = {
     "redirect_uri": "https://ubpredirect.localtunnel.me/oauth/redirect",
     "scope": "account_inquiry",
     "type": "single",
-    "partnerId": "1234-56789"
+    "partnerId": partner_id
 }
 
 response = requests.get(AUTH_URL, params=params)

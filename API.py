@@ -3,8 +3,9 @@ from dotenv import load_dotenv
 import requests
 
 load_dotenv()
-client_id = os.getenv("CLIENT_ID")  # Load client ID from .env
-client_secret = os.getenv("CLIENT_SECRET")  # Load client secret from .env
+client_id = os.getenv("CLIENT_ID")  
+client_secret = os.getenv("CLIENT_SECRET") 
+partner_id = os.getenv("PARTNER_ID")
 auth_code = os.getenv("AUTH_CODE")
 
 def access_code():
@@ -24,27 +25,32 @@ def access_code():
 
     response = requests.post(TOKEN_URL, data=data, headers=headers)
 
-    print(response.status_code)
-    print(response.json()) 
+    data = response.json()
 
-    # Filter JSON and return access_code
+    return data['token_type'], data['access_token']
+    
 
 
 
-def sample(code):
+def sample(type, code):
     TRANSACTIONS_URL = "https://api-uat.unionbankph.com/partners/sb/portal/online/accounts/v1/transactions"
+
+    params = {
+        "fromDate": "2017-01-01",
+        "toDate": "2017-12-31",
+        "tranType": "D"
+    }
  
     headers = {
         "Accept": "application/json",
         "content-type": "application/json",
         "x-ibm-client-id": client_id,
         "x-ibm-client-secret": client_secret,
-        "Authorization": f"Bearer {code}",
-        "x-partner-id": "5dff2cdf-ef15-48fb-a87b-375ebff415bb"
+        "Authorization": f"{type} {code}",
+        "x-partner-id": partner_id
     }
     
-    response = requests.get(TRANSACTIONS_URL,  headers=headers)
-
+    response = requests.get(TRANSACTIONS_URL, params=params, headers=headers)
 
     print(response.status_code) 
     print(response.json()) 
