@@ -5,10 +5,9 @@ import requests
 load_dotenv()
 client_id = os.getenv("CLIENT_ID")  
 client_secret = os.getenv("CLIENT_SECRET") 
-partner_id = os.getenv("PARTNER_ID")
-auth_code = os.getenv("AUTH_CODE")
 
-def access_code():
+
+def get_token(auth_code):
     TOKEN_URL = "https://api-uat.unionbankph.com/partners/sb/customers/v1/oauth2/token"
 
     data = {
@@ -27,4 +26,9 @@ def access_code():
 
     data = response.json()
 
-    return data['token_type'], data['access_token']
+    print(data['access_token'])
+
+def part(auth_code):
+    pass
+
+get_token(os.getenv("ACC_HIS_AUTH_CODE"))
