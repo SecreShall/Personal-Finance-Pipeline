@@ -14,7 +14,7 @@ def access_code():
     data = {
         "grant_type": "authorization_code",
         "client_id": client_id,
-        "redirect_uri": "https://ubpredirect.localtunnel.me/oauth/redirect",
+        "redirect_uri": "http://localhost:8000/callback",
         "code": auth_code
     }
 
