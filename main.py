@@ -2,7 +2,7 @@ import pandas as pd
 import os
 import requests
 from dotenv import load_dotenv
-from access_token import get_valid_token
+from token_handler import get_valid_token
 
 
 load_dotenv()
