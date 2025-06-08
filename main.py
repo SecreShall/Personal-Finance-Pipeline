@@ -3,6 +3,7 @@ import os
 import requests
 from dotenv import load_dotenv
 from token_handler import get_valid_token
+from datetime import datetime, timedelta
 
 
 load_dotenv()
@@ -18,11 +19,13 @@ def extract(auth_code):
 
     token = "AAIkNGEyN2I2OTUtNTgxZS00MGZiLWIyN2MtMWZhZTczYTkxNzUxY5IYHWb4-6-AlOFGHhRiV-2TdIRstJxBqz3MH11g_LZNwclbnWJzanjsl-IJbySi2qqqOeu5DERPhfTzhwktP2pGW-SqXdhkN1iNRKoD2FxYFHgDr8jNshvnIM6OrSzxeDrWKwuTyqIlg6uAMIZMeHviTGJpiXD3VOYKGPivSDWTt5JSsw4oizx38dyM218Khpwpec233gNUjfjXUE5x5LXKMY39c_lNqbzpGDyieHPG5HE_iB3QN6QLgE6CQF1EahZwOQGAE9en8dL13umOnbnsvr8MHl-1h0WBZEUoohSH71ts9ku5MpXOKL5ARqwfEcK_pK5uSpNtLPDj3Bsq3r2lBOPFyNa6Y0pJRPCqink"
 
-    if not token:
-        print("Error: No valid access token.")
-        return None
+    yesterday = datetime.now() - timedelta(days=1)
+    fromDate = yesterday.strftime("%Y-%m-%d")
+    toDate = yesterday.strftime("%Y-%m-%d")
 
     params = {
+        "fromDate": fromDate,
+        "toDate": toDate,
         "tranType": "D",
     }
 
@@ -37,32 +40,43 @@ def extract(auth_code):
     
     response = requests.get(TRANSACTIONS_URL, params=params,  headers=headers)
 
-    return response.json()
+    if (response.status_code) == 200:
+        return response.json()
+    else:
+        print(response.text)
+        return None
 
 def transform(data):
     df = pd.DataFrame(columns=['id', 'transactionID', 'transactionType', 'amount', 'currency', 'transactionDate', 'remarks', 'balance', 'postedDate'])
 
+    if None in data:
+        return df, False
+    else:
+        for record in data['records']:
+            dict = {
+                'id': record['recordNumber'], 
+                'transactionID': record['tranId'], 
+                'transactionType': record['tranType'], 
+                'amount': record['amount'], 
+                'currency': record['currency'], 
+                'transactionDate': record['tranDate'], 
+                'remarks': record['remarks'], 
+                'balance': record['balance'], 
+                'postedDate': record['postedDate']
+                }
 
-    for record in data['records']:
-        dict = {
-            'id': record['recordNumber'], 
-            'transactionID': record['tranId'], 
-            'transactionType': record['tranType'], 
-             'amount': record['amount'], 
-            'currency': record['currency'], 
-            'transactionDate': record['tranDate'], 
-            'remarks': record['remarks'], 
-            'balance': record['balance'], 
-            'postedDate': record['postedDate']
-            }
+            df = pd.concat([df, pd.DataFrame(dict,index=[0])])
+            df = df.reset_index(drop=True)
 
-        df = pd.concat([df, pd.DataFrame(dict,index=[0])])
-        df = df.reset_index(drop=True)
+            return df, True
 
     print(df)
 
-def load(data_frame):
-    pass
+def load(data_frame, status):
+    if status == True:
+        pass
+    else:
+        pass
 
 
 

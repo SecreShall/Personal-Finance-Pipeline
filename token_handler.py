@@ -65,6 +65,9 @@ def refresh_access_token():
         return None
 
 def get_valid_token(auth_code):
+    if auth_code is None:
+        print("Error: auth_code is required but not provided.")
+        return None
     if time.time() >= token_expiry:
         return refresh_access_token() or customer_token(auth_code)
     return customer_token(auth_code)
@@ -98,3 +101,4 @@ def partner_token(scope):
 
     print(response.status_code)  
     print(response.json())
+
