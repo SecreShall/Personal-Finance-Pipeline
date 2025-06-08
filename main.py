@@ -32,7 +32,7 @@ def extract(auth_code):
         "x-ibm-client-id": client_id,
         "x-ibm-client-secret": client_secret,
         "Authorization": f"Bearer {token}",
-        "x-partner-id": "01bbb51e-1e6c-4bd4-af9c-450957522aac"
+        "x-partner-id": partner_id
     }
     
     response = requests.get(TRANSACTIONS_URL, params=params,  headers=headers)
