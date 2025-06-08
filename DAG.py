@@ -1,7 +1,8 @@
 #import libraries
 from airflow.operators.python import PythonOperator 
 from airflow import DAG
-from datetime import timedelta, datetime
+from airflow.utils.dates import days_ago
+from datetime import timedelta
 from main import extract, transform, load
 
 default_args={
