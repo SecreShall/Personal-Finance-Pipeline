@@ -4,6 +4,7 @@ import requests
 from dotenv import load_dotenv
 from token_handler import get_valid_token
 from datetime import datetime, timedelta
+import psycopg2
 
 
 load_dotenv()
@@ -66,15 +67,36 @@ def transform(data):
                 }
 
             df = pd.concat([df, pd.DataFrame(dict,index=[0])])
-            df = df.reset_index(drop=True)
+            transformed_data = df.reset_index(drop=True)
 
-            return df, True
+        return transformed_data, True
 
-    print(df)
-
-def load(data_frame, status):
+def load(data, status):
     if status == True:
-        pass
+        try:
+            load_dotenv()
+            password_key = os.getenv("DB_PASS")
+
+            connection = psycopg2.connect(
+                host='localhost',
+                database='demo',
+                user='postgres',
+                password=password_key
+            )
+            cursor = connection.cursor()
+
+            insert_query = f"INSERT INTO transactions (id, transactionID, transactionType, amount, currency, transactionDate, remarks, balance, postedDate) VALUES('{data['id']}', {data['transactionID']},{data['transactionType']},{data['amount']},{data['currency']},{data['transactionDate']},{data['remarks']},'{data['balance']}','{data['postedDate']}')"
+
+            cursor.execute(insert_query)
+            connection.commit()
+            print("Insert successful...")
+
+        except Exception as e:
+            print(f"Insertion failed... Error {e}")
+        
+        finally:
+            cursor.close()
+            connection.close()
     else:
         pass
 
