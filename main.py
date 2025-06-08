@@ -25,9 +25,9 @@ def extract(auth_code):
     toDate = yesterday.strftime("%Y-%m-%d")
 
     params = {
-        "fromDate": fromDate,
-        "toDate": toDate,
-        "tranType": "D",
+        #"fromDate": fromDate,
+        #"toDate": toDate,
+        #"tranType": "D",
     }
 
     headers = {
@@ -48,32 +48,39 @@ def extract(auth_code):
         return None
 
 def transform(data):
-    df = pd.DataFrame(columns=['id', 'transactionID', 'transactionType', 'amount', 'currency', 'transactionDate', 'remarks', 'balance', 'postedDate'])
+    df = pd.DataFrame(columns=['record_id', 'transaction_id', 'transaction_type', 'amount', 'currency', 'transaction_date', 'remarks', 'balance', 'posted_date'])
 
     if None in data:
-        return df, False
+        return False
     else:
         for record in data['records']:
             dict = {
-                'id': record['recordNumber'], 
-                'transactionID': record['tranId'], 
-                'transactionType': record['tranType'], 
+                'record_id': record['recordNumber'], 
+                'transaction_id': record['tranId'], 
+                'transaction_type': record['tranType'], 
                 'amount': record['amount'], 
                 'currency': record['currency'], 
-                'transactionDate': record['tranDate'], 
+                'transaction_date': record['tranDate'], 
                 'remarks': record['remarks'], 
                 'balance': record['balance'], 
-                'postedDate': record['postedDate']
+                'posted_date': record['postedDate']
                 }
-
             df = pd.concat([df, pd.DataFrame(dict,index=[0])])
             transformed_data = df.reset_index(drop=True)
 
-        return transformed_data, True
+        transformed_data['transaction_type'] = transformed_data['transaction_type'].str.replace('D', 'Debit').replace('C', 'Credit')
 
-def load(data, status):
-    if status == True:
+        transformed_data['transaction_date'] = transformed_data['transaction_date'].str.replace('T', ' ')
+        transformed_data['posted_date'] = transformed_data['posted_date'].str.replace('T', ' ')
+        transformed_data['transaction_date'] = transformed_data['transaction_date'].str[:-4]
+        transformed_data['posted_date'] = transformed_data['posted_date'].str[:-4]
+
+        return transformed_data
+
+def load(data):
+    if data is not None and isinstance(data, pd.DataFrame) and not data.empty:
         try:
+          
             load_dotenv()
             password_key = os.getenv("DB_PASS")
 
@@ -85,9 +92,15 @@ def load(data, status):
             )
             cursor = connection.cursor()
 
-            insert_query = f"INSERT INTO transactions (id, transactionID, transactionType, amount, currency, transactionDate, remarks, balance, postedDate) VALUES('{data['id']}', {data['transactionID']},{data['transactionType']},{data['amount']},{data['currency']},{data['transactionDate']},{data['remarks']},'{data['balance']}','{data['postedDate']}')"
 
-            cursor.execute(insert_query)
+            insert_query = "INSERT INTO transactions (record_id, transaction_id, transaction_type, amount, currency, transaction_date, remarks, balance, posted_date) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
+
+            print(data)
+
+            values = [tuple(row) for row in data.itertuples(index=False, name=None)]
+
+
+            cursor.executemany(insert_query, values)
             connection.commit()
             print("Insert successful...")
 

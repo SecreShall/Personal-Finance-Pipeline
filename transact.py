@@ -1,5 +1,3 @@
-
-import pandas as pd
 import os
 import requests
 from dotenv import load_dotenv
@@ -228,4 +226,4 @@ def account():
     print(response.status_code)
     print(response.json())
 
-bal()
+transfer()
