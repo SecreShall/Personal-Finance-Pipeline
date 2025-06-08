@@ -1,21 +1,21 @@
 #import libraries
-from airflow.operators.python import PythonOperator # type: ignore
+from airflow.operators.python import PythonOperator 
 from airflow import DAG
 from datetime import timedelta, datetime
 from main import extract, transform, load
 
 default_args={
      'owner': 'Cley',
-     'start_date': datetime(2025, 6, 6),
+     'start_date': days_ago(1),
      'retries': 1,
      'retry_delay': timedelta(minutes=5),
 }
 
 dag = DAG(
-    dag_id='finance',
+    dag_id='finance_pipeline',
     default_args=default_args,
-    description='Finance',
-    schedule='@daily',
+    description='Finance ETL',
+    schedule_interval = "0 6 * * *" # 6:00 AM
 )
 
 extract_task = PythonOperator(

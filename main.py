@@ -95,8 +95,6 @@ def load(data):
 
             insert_query = "INSERT INTO transactions (record_id, transaction_id, transaction_type, amount, currency, transaction_date, remarks, balance, posted_date) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
 
-            print(data)
-
             values = [tuple(row) for row in data.itertuples(index=False, name=None)]
 
 
