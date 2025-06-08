@@ -22,4 +22,4 @@ def get_auth(scope):
     response = requests.get(AUTH_URL, params=params)
     print(f"Redirect user to: {response.url}")  
 
-get_auth("account_inquiry")
+get_auth("account_inquiry") # Scope of authorization
