@@ -48,14 +48,13 @@ def extract(auth_code):
         return None
 
 def transform(data):
-    df = pd.DataFrame(columns=['record_id', 'transaction_id', 'transaction_type', 'amount', 'currency', 'transaction_date', 'remarks', 'balance', 'posted_date'])
+    df = pd.DataFrame(columns=['transaction_id', 'transaction_type', 'amount', 'currency', 'transaction_date', 'remarks', 'balance', 'posted_date'])
 
     if None in data:
         return False
     else:
         for record in data['records']:
             dict = {
-                'record_id': record['recordNumber'], 
                 'transaction_id': record['tranId'], 
                 'transaction_type': record['tranType'], 
                 'amount': record['amount'], 
@@ -93,7 +92,7 @@ def load(data):
             cursor = connection.cursor()
 
 
-            insert_query = "INSERT INTO transactions (record_id, transaction_id, transaction_type, amount, currency, transaction_date, remarks, balance, posted_date) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
+            insert_query = "INSERT INTO transactions (transaction_id, transaction_type, amount, currency, transaction_date, remarks, balance, posted_date) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
 
             values = [tuple(row) for row in data.itertuples(index=False, name=None)]
 
