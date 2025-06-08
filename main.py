@@ -2,8 +2,8 @@ import pandas as pd
 import os
 import requests
 from dotenv import load_dotenv
-from access_token import customer_token, get_valid_token
-import json
+from access_token import get_valid_token
+
 
 load_dotenv()
 client_id = os.getenv("CLIENT_ID")
