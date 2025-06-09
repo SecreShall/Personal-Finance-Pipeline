@@ -29,11 +29,11 @@ This pipeline automates the retrieval, transformation, and storage of structured
 CREATE TABLE transactions (
     transaction_id VARCHAR(10) PRIMARY KEY,
     transaction_type VARCHAR(6),
-    amount DECIMAL(12,2),
+    amount NUMERIC(12,2),
     currency CHAR(3),
     transaction_date TIMESTAMP,
     remarks VARCHAR(300),
-    balance DECIMAL(30,2),
+    balance NUMERIC(30,2),
     posted_date TIMESTAMP
 );
 ```
